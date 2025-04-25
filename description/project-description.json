@@ -1,0 +1,261 @@
+{
+    "projectName": "Indonesian KTP Recognition System",
+    "version": "1.0.0",
+    "description": "A web-based system for recognizing and extracting information from Indonesian National ID cards (KTP) using computer vision and OCR",
+    "objective": "To demonstrate accurate recognition of NIK, Name, and other demographic data from uploaded KTP images",
+    
+    "technicalRequirements": {
+      "modelRequirements": {
+        "textDetection": {
+          "type": "Pre-trained model",
+          "source": "Hugging Face",
+          "recommendedModels": [
+            {
+              "name": "microsoft/table-transformer-detection",
+              "description": "For detecting text regions in the ID card"
+            },
+            {
+              "name": "PaddleOCR/PP-OCRv3",
+              "description": "Alternative for text detection with good performance on document images"
+            }
+          ]
+        },
+        "textRecognition": {
+          "type": "Pre-trained OCR model",
+          "source": "Hugging Face",
+          "recommendedModels": [
+            {
+              "name": "microsoft/trocr-base-printed",
+              "description": "For recognizing printed text from detected regions"
+            },
+            {
+              "name": "indonesian-nlp/indobert-base-p2",
+              "description": "For post-processing text specific to Indonesian language"
+            }
+          ]
+        },
+        "postProcessing": {
+          "type": "Custom regex patterns",
+          "description": "Regular expressions and rules for validating extracted data fields"
+        }
+      },
+      
+      "dataExtractionFields": {
+        "required": [
+          {
+            "name": "NIK",
+            "description": "16-digit National Identity Number",
+            "validationPattern": "^\\d{16}$"
+          },
+          {
+            "name": "Name",
+            "description": "Full name as printed on the ID card"
+          }
+        ],
+        "optional": [
+          {
+            "name": "PlaceOfBirth",
+            "description": "Place of birth"
+          },
+          {
+            "name": "DateOfBirth",
+            "description": "Date of birth in DD-MM-YYYY format",
+            "validationPattern": "^\\d{2}-\\d{2}-\\d{4}$"
+          },
+          {
+            "name": "Gender",
+            "description": "Gender (LAKI-LAKI/PEREMPUAN)",
+            "validationPattern": "^(LAKI-LAKI|PEREMPUAN)$"
+          },
+          {
+            "name": "Address",
+            "description": "Residential address"
+          },
+          {
+            "name": "Religion",
+            "description": "Religion"
+          },
+          {
+            "name": "MaritalStatus",
+            "description": "Marital status"
+          },
+          {
+            "name": "Occupation",
+            "description": "Occupation"
+          },
+          {
+            "name": "Citizenship",
+            "description": "Citizenship (typically 'WNI')"
+          }
+        ]
+      },
+      
+      "webInterface": {
+        "frontend": {
+          "framework": "React",
+          "features": [
+            {
+              "name": "ImageUpload",
+              "description": "Component for uploading KTP images from device",
+              "acceptedFormats": ["jpg", "jpeg", "png"],
+              "maxSizeInMB": 10
+            },
+            {
+              "name": "ImagePreview",
+              "description": "Component to display the uploaded KTP image"
+            },
+            {
+              "name": "BoundingBoxOverlay",
+              "description": "Component to show detected text regions with bounding boxes on the image"
+            },
+            {
+              "name": "ResultsDisplay",
+              "description": "Component to show extracted KTP information in a structured format"
+            },
+            {
+              "name": "ManualCorrection",
+              "description": "Interface for users to correct any incorrectly recognized text"
+            }
+          ]
+        },
+        "backend": {
+          "framework": "Python FastAPI",
+          "endpoints": [
+            {
+              "path": "/upload",
+              "method": "POST",
+              "description": "Endpoint to upload KTP image"
+            },
+            {
+              "path": "/process",
+              "method": "POST",
+              "description": "Endpoint to process the uploaded image and extract information"
+            },
+            {
+              "path": "/validate",
+              "method": "POST",
+              "description": "Endpoint to validate extracted information"
+            }
+          ]
+        }
+      },
+      
+      "processingPipeline": {
+        "steps": [
+          {
+            "step": 1,
+            "name": "Preprocessing",
+            "description": "Image enhancement, noise reduction, and normalization"
+          },
+          {
+            "step": 2,
+            "name": "TextDetection",
+            "description": "Detect regions containing text in the KTP image"
+          },
+          {
+            "step": 3,
+            "name": "TextRecognition",
+            "description": "Recognize and extract text from each detected region"
+          },
+          {
+            "step": 4,
+            "name": "FieldClassification",
+            "description": "Classify extracted text into appropriate KTP fields"
+          },
+          {
+            "step": 5,
+            "name": "DataValidation",
+            "description": "Validate extracted data using predefined patterns"
+          },
+          {
+            "step": 6,
+            "name": "ResultFormatting",
+            "description": "Format results for display on the web interface"
+          }
+        ]
+      },
+      
+      "performanceRequirements": {
+        "accuracy": {
+          "nikRecognition": "≥ 75%",
+          "nameRecognition": "≥ 70%",
+          "otherFields": "≥ 25%"
+        },
+        "processing": {
+          "maxProcessingTimePerImage": "10 seconds",
+          "concurrentUsers": "Up to 10"
+        }
+      },
+      
+      "securityRequirements": {
+        "dataProtection": [
+          "No permanent storage of ID card images",
+          "Automatic deletion of processed images after session ends",
+          "Data processing performed locally within the application"
+        ],
+        "privacyCompliance": [
+          "Compliance with Indonesian personal data protection regulations",
+          "Clear user consent for image processing",
+          "No data sharing with third parties"
+        ]
+      },
+      
+      "deploymentRequirements": {
+        "containerization": "Docker",
+        "minimumHardware": {
+          "cpu": "4 cores",
+          "ram": "8 GB",
+          "storage": "10 GB free space"
+        },
+        "operatingSystem": "Linux/Windows/macOS (via Docker)"
+      }
+    },
+    
+    "implementationPlan": {
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Setup and Model Selection",
+          "tasks": [
+            "Initialize project repository",
+            "Select and test OCR models from Hugging Face",
+            "Create basic Docker environment"
+          ],
+          "duration": "1 week"
+        },
+        {
+          "phase": 2,
+          "name": "Backend Development",
+          "tasks": [
+            "Implement image preprocessing pipeline",
+            "Integrate text detection and recognition models",
+            "Develop field recognition logic specific to KTP",
+            "Create validation rules for extracted data"
+          ],
+          "duration": "2 weeks"
+        },
+        {
+          "phase": 3,
+          "name": "Frontend Development",
+          "tasks": [
+            "Create image upload interface",
+            "Implement bounding box visualization",
+            "Build results display component",
+            "Develop manual correction interface"
+          ],
+          "duration": "2 weeks"
+        },
+        {
+          "phase": 4,
+          "name": "Integration and Testing",
+          "tasks": [
+            "Integrate frontend and backend",
+            "Perform accuracy testing with sample KTP images",
+            "Optimize performance",
+            "Fix identified issues"
+          ],
+          "duration": "1 week"
+        }
+      ]
+    }
+  }
