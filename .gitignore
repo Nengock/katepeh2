@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+develop-eggs/
+parts/
+bin/
+lib/
+lib64/
+.coverage
+.tox/
+.nox/
+.mypy_cache/
+instance/
+.DS_Store
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnp
+.pnp.js
+
+# Logs
+logs
+*.log
+*.stackdump
+
+# Env files
+.env
+.env.*
